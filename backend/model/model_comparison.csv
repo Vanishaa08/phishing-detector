@@ -1,0 +1,4 @@
+Model,Accuracy,ROC-AUC,Train Time
+Logistic Regression,81.46%,0.7935,46.6s
+Random Forest,90.15%,0.9513,203.0s
+Gradient Boosting,85.72%,0.9005,73.4s

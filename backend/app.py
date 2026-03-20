@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib, os, sys, time, sqlite3
 from datetime import datetime
+from reputation import get_reputation
 
 sys.path.append(os.path.dirname(__file__))
 from features import extract_features
@@ -9,13 +10,11 @@ from features import extract_features
 app = Flask(__name__)
 CORS(app)
 
-# Load model
 model = joblib.load('model/phishing_model.pkl')
 feature_names = joblib.load('model/feature_names.pkl')
 THRESHOLD = 0.35
 print("Model loaded.")
 
-# Setup SQLite
 def init_db():
     conn = sqlite3.connect('logs/requests.db')
     conn.execute('''CREATE TABLE IF NOT EXISTS logs (
@@ -52,8 +51,6 @@ def get_threat_level(probability):
     elif probability >= 0.35: return 'LOW_RISK'
     return 'SAFE'
 
-# ── Routes ────────────────────────────────────────────
-
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({'status': 'running', 'threshold': THRESHOLD})
@@ -65,11 +62,9 @@ def predict():
     url = data.get('url', '')
     if not url:
         return jsonify({'error': 'No URL provided'}), 400
-
     pred, prob = predict_url(url)
     ms = round((time.time() - start) * 1000, 2)
     log_request(url, pred, prob, ms)
-
     return jsonify({
         'url': url,
         'prediction': pred,
@@ -86,10 +81,8 @@ def analyze():
     email_text = data.get('email_text', '')
     urls = data.get('urls', [])
     sender = data.get('sender', '')
-
     if not urls:
         return jsonify({'error': 'No URLs provided'}), 400
-
     results = []
     threat_count = 0
     for url in urls:
@@ -104,7 +97,6 @@ def analyze():
             'threat_level': level,
             'is_phishing': bool(pred == 1)
         })
-
     ms = round((time.time() - start) * 1000, 2)
     return jsonify({
         'sender': sender,
@@ -125,6 +117,15 @@ def get_logs():
         'prediction': r[3], 'probability': r[4],
         'response_time_ms': r[5]
     } for r in rows])
+
+@app.route('/reputation', methods=['POST'])
+def reputation():
+    data = request.get_json()
+    url = data.get('url', '')
+    if not url:
+        return jsonify({'error': 'No URL provided'}), 400
+    result = get_reputation(url)
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -1,0 +1,1 @@
+console.log('Phishing Detector: content script loaded on Gmail.');

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { width: 300px; padding: 16px; font-family: Arial, sans-serif; }
+    h2 { font-size: 16px; margin: 0 0 12px; color: #333; }
+    .stat { display: flex; justify-content: space-between; padding: 8px 0;
+            border-bottom: 1px solid #eee; font-size: 13px; }
+    .stat span:last-child { font-weight: bold; }
+    .danger { color: #ff4444; }
+    .safe { color: #00cc44; }
+    #status { margin-top: 12px; font-size: 12px; color: #888; }
+  </style>
+</head>
+<body>
+  <h2>Phishing Detector</h2>
+  <div class="stat">
+    <span>Emails scanned</span>
+    <span id="scanned">0</span>
+  </div>
+  <div class="stat">
+    <span>Threats detected</span>
+    <span id="threats" class="danger">0</span>
+  </div>
+  <div class="stat">
+    <span>Links checked</span>
+    <span id="links">0</span>
+  </div>
+  <div id="status">Open Gmail to start scanning.</div>
+  <script src="popup.js"></script>
+</body>
+</html>

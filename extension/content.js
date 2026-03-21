@@ -6,6 +6,27 @@ let totalLinks = 0;
 let totalThreats = 0;
 let totalScanned = 0;
 
+
+const WHITELIST = new Set([
+  'google.com','youtube.com','twitter.com','x.com',
+  'linkedin.com','instagram.com','facebook.com',
+  'github.com','microsoft.com','apple.com',
+  'amazon.com','netflix.com','spotify.com',
+  'leetcode.com','codeforces.com','replit.com',
+  'vercel.com','notion.so','slack.com','zoom.us'
+]);
+
+function isWhitelisted(url) {
+  try {
+    const hostname = new URL(url).hostname.replace('www.','');
+    return WHITELIST.has(hostname) ||
+      [...WHITELIST].some(w => hostname.endsWith('.' + w));
+  } catch {
+    return false;
+  }
+}
+
+
 // Phishing keywords by category with weights
 const PHISHING_KEYWORDS = {
   urgency: { words: ['urgent','immediately','within 24 hours','act now',
@@ -113,22 +134,39 @@ function addBadge(linkElement, threatLevel, probability, url) {
   }
 }
 
+
 async function checkUrl(url, element, nlpScore = 0) {
+  // Skip whitelisted domains
+  if (isWhitelisted(url)) {
+    addBadge(element, 'SAFE', 0.05, url);
+    return;
+  }
+
+  const startTime = performance.now();
+
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
     const response = await fetch(`${BACKEND}/predict`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url })
+      body: JSON.stringify({ url }),
+      signal: controller.signal
     });
-    if (!response.ok) return;
+
+    clearTimeout(timeout);
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
 
-    // Hybrid score: ML probability + NLP boost
+    const latency = Math.round(performance.now() - startTime);
+
+    // Hybrid score
     let hybridProb = data.probability;
     if (nlpScore >= 10) hybridProb = Math.min(1, hybridProb + 0.15);
     else if (nlpScore >= 5) hybridProb = Math.min(1, hybridProb + 0.08);
 
-    // Recalculate threat level from hybrid score
     let threatLevel;
     if (hybridProb >= 0.75)      threatLevel = 'DANGEROUS';
     else if (hybridProb >= 0.50) threatLevel = 'SUSPICIOUS';
@@ -137,12 +175,24 @@ async function checkUrl(url, element, nlpScore = 0) {
 
     addBadge(element, threatLevel, hybridProb, url);
     if (threatLevel !== 'SAFE') totalThreats++;
+
+    console.log(`[${latency}ms] ${threatLevel} → ${url}`);
     chrome.storage.local.set({ totalLinks, totalThreats, totalScanned });
 
   } catch (err) {
-    console.log('Phishing Detector: Backend unreachable.');
+    if (err.name === 'AbortError') {
+      console.log(`Timeout scanning: ${url}`);
+    } else {
+      console.log(`Phishing Detector: Backend unreachable — ${err.message}`);
+    }
+
+    // Graceful degradation — use NLP score only
+    if (nlpScore >= 10) {
+      addBadge(element, 'SUSPICIOUS', 0.6, url);
+    }
   }
 }
+
 
 async function scanEmail() {
   const emailBody = document.querySelector('.a3s.aiL');

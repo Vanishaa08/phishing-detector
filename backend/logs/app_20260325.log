@@ -1,0 +1,69 @@
+2026-03-25 04:41:48,467 [WARNING]  * Debugger is active!
+2026-03-25 04:41:48,475 [INFO]  * Debugger PIN: 237-310-400
+2026-03-25 04:47:27,714 [INFO]  * Detected change in 'C:\\Users\\VANISHATANWAR\\phishing-detector\\backend\\app.py', reloading
+2026-03-25 04:47:31,813 [WARNING]  * Debugger is active!
+2026-03-25 04:47:31,820 [INFO]  * Debugger PIN: 237-310-400
+2026-03-25 04:49:59,636 [INFO]  * Detected change in 'C:\\Users\\VANISHATANWAR\\phishing-detector\\backend\\app.py', reloading
+2026-03-25 04:50:03,599 [WARNING]  * Debugger is active!
+2026-03-25 04:50:03,604 [INFO]  * Debugger PIN: 237-310-400
+2026-03-25 04:54:57,179 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-03-25 04:54:57,180 [INFO] [33mPress CTRL+C to quit[0m
+2026-03-25 04:54:57,183 [INFO]  * Restarting with stat
+2026-03-25 04:55:00,831 [WARNING]  * Debugger is active!
+2026-03-25 04:55:00,871 [INFO]  * Debugger PIN: 237-310-400
+2026-03-25 04:56:48,813 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:48] "GET /health HTTP/1.1" 200 -
+2026-03-25 04:56:48,918 [INFO] PREDICT | URL=https://google.com | LEVEL=LOW_RISK | PROB=0.4453 | TIME=91.77ms
+2026-03-25 04:56:48,919 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:48] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:49,066 [INFO] PREDICT | URL=https://github.com | LEVEL=SUSPICIOUS | PROB=0.6446 | TIME=47.95ms
+2026-03-25 04:56:49,067 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:49] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:49,172 [INFO] PREDICT | URL=https://microsoft.com | LEVEL=SAFE | PROB=0.3387 | TIME=81.91ms
+2026-03-25 04:56:49,172 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:49] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:49,272 [INFO] PREDICT | URL=https://stackoverflow.com | LEVEL=SAFE | PROB=0.1033 | TIME=60.59ms
+2026-03-25 04:56:49,273 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:49] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:49,374 [INFO] PREDICT | URL=https://wikipedia.org | LEVEL=SAFE | PROB=0.2227 | TIME=70.01ms
+2026-03-25 04:56:49,375 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:49] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:49,491 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=60.71ms
+2026-03-25 04:56:49,492 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:49] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:49,569 [INFO] PREDICT | URL=http://192.168.1.1/login | LEVEL=DANGEROUS | PROB=0.9975 | TIME=61.16ms
+2026-03-25 04:56:49,570 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:49] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:49,653 [INFO] PREDICT | URL=http://bank-account-verify.top/login | LEVEL=DANGEROUS | PROB=0.9818 | TIME=69.36ms
+2026-03-25 04:56:49,654 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:49] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:49,739 [INFO] PREDICT | URL=http://secure-paypal-update.xyz | LEVEL=DANGEROUS | PROB=0.9638 | TIME=67.79ms
+2026-03-25 04:56:49,740 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:49] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:49,869 [INFO] PREDICT | URL=http://amazon-security-alert.xyz/verify | LEVEL=DANGEROUS | PROB=0.9727 | TIME=63.48ms
+2026-03-25 04:56:49,870 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:49] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:49,944 [INFO] PREDICT | URL=http://apple-id-verify.online/login | LEVEL=DANGEROUS | PROB=0.9764 | TIME=57.5ms
+2026-03-25 04:56:49,944 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:49] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:50,009 [INFO] PREDICT | URL=http://xn--pypal-4ve.com | LEVEL=SUSPICIOUS | PROB=0.6663 | TIME=53.14ms
+2026-03-25 04:56:50,009 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:50,076 [INFO] PREDICT | URL=http://login.paypal.com.evil.xyz | LEVEL=DANGEROUS | PROB=0.9543 | TIME=43.55ms
+2026-03-25 04:56:50,079 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:50,085 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2026-03-25 04:56:50,161 [INFO] PREDICT | URL=not-a-url | LEVEL=SAFE | PROB=0.1852 | TIME=47.82ms
+2026-03-25 04:56:50,162 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:50,167 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2026-03-25 04:56:50,227 [INFO] ANALYZE | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497
+2026-03-25 04:56:50,316 [INFO] ANALYZE | URL=https://google.com | LEVEL=LOW_RISK | PROB=0.4453
+2026-03-25 04:56:50,317 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /analyze HTTP/1.1" 200 -
+2026-03-25 04:56:50,324 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "GET /logs HTTP/1.1" 200 -
+2026-03-25 04:56:50,402 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=65.21ms
+2026-03-25 04:56:50,403 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:50,521 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=48.3ms
+2026-03-25 04:56:50,523 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:50,610 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=69.7ms
+2026-03-25 04:56:50,612 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:50,690 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=61.37ms
+2026-03-25 04:56:50,691 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:50,774 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=52.75ms
+2026-03-25 04:56:50,775 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:50,857 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=58.27ms
+2026-03-25 04:56:50,858 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:50,959 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=70.78ms
+2026-03-25 04:56:50,960 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:50] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:51,044 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=62.02ms
+2026-03-25 04:56:51,045 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:51] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:51,129 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=53.81ms
+2026-03-25 04:56:51,130 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:51] "POST /predict HTTP/1.1" 200 -
+2026-03-25 04:56:51,213 [INFO] PREDICT | URL=http://paypal-login-secure.xyz | LEVEL=DANGEROUS | PROB=0.9497 | TIME=50.52ms
+2026-03-25 04:56:51,214 [INFO] 127.0.0.1 - - [25/Mar/2026 04:56:51] "POST /predict HTTP/1.1" 200 -

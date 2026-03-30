@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split, cross_val_score, Randomize
 from sklearn.metrics import accuracy_score, classification_report
 import joblib
 import sys, os, time
+from sklearn.metrics import roc_curve, auc
 
 sys.path.append(os.path.dirname(__file__))
 from features import extract_features
@@ -85,6 +86,11 @@ print(f"Best CV accuracy: {search.best_score_*100:.2f}%")
 print("\n[5/6] Training final model with best params...")
 best_model = search.best_estimator_
 best_model.fit(X_train, y_train)
+from sklearn.metrics import roc_curve, auc, confusion_matrix
+y_prob_test = best_model.predict_proba(X_test)[:,1]
+fpr, tpr, _ = roc_curve(y_test, y_prob_test)
+roc_auc_score = auc(fpr, tpr)
+cm = confusion_matrix(y_test, best_model.predict(X_test))
 
 # Evaluate
 print("\n[6/6] Evaluating...")
@@ -108,6 +114,37 @@ joblib.dump(best_model, 'model/phishing_model.pkl')
 joblib.dump(list(X.columns), 'model/feature_names.pkl')
 print(f"\nModel saved → model/phishing_model.pkl")
 print(f"Features saved → model/feature_names.pkl")
+
+# Log to MLflow
+print("\nLogging to MLflow...")
+try:
+    from mlflow_tracking import log_training_run
+    params = {
+        'n_estimators': search.best_params_['n_estimators'],
+        'max_depth': str(search.best_params_['max_depth']),
+        'max_features': search.best_params_['max_features'],
+        'min_samples_split': search.best_params_['min_samples_split'],
+        'min_samples_leaf': search.best_params_['min_samples_leaf'],
+        'dataset_size': len(df),
+        'train_size': len(X_train),
+        'test_size': len(X_test)
+    }
+    metrics = {
+        'val_accuracy': float(val_acc),
+        'test_accuracy': float(test_acc),
+        'roc_auc': float(roc_auc_score),
+        'cv_mean': float(cv_scores.mean()),
+        'cv_std': float(cv_scores.std()),
+        'phishing_recall': float(cm[1][1]/(cm[1][0]+cm[1][1]))
+    }
+    run_id = log_training_run(
+        best_model, params, metrics,
+        list(X.columns), run_name="RandomForest_v1"
+    )
+    print(f"MLflow logged successfully. Run ID: {run_id}")
+except Exception as e:
+    print(f"MLflow logging skipped: {e}")
+
 print("\n" + "="*50)
 print(f"FINAL TEST ACCURACY: {test_acc*100:.2f}%")
 print("="*50)

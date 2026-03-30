@@ -1,0 +1,17 @@
+length
+dot_count
+hyphen_count
+slash_count
+digit_count
+special_char_count
+has_https
+has_ip
+has_at
+has_double_slash
+has_port
+entropy
+has_punycode
+suspicious_tld
+subdomain_count
+brand_in_subdomain
+suspicious_words

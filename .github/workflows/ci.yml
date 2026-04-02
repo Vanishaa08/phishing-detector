@@ -1,0 +1,148 @@
+name: PhishGuard AI — CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install flake8
+        run: pip install flake8
+
+      - name: Run flake8 linting
+        run: |
+          flake8 backend/app.py backend/features.py backend/cache.py \
+            --max-line-length=120 \
+            --ignore=E501,W503,E302,E303,W291,W293 \
+            --statistics
+
+  test:
+    name: API Test Suite
+    runs-on: ubuntu-latest
+    needs: lint
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Download model from Google Drive
+        run: |
+          pip install gdown
+          mkdir -p backend/model
+          echo "Model download step — add gdown link here"
+
+      - name: Create dummy model for CI testing
+        run: |
+          python3 - << 'PYEOF'
+          import joblib
+          import os
+          from sklearn.ensemble import RandomForestClassifier
+          import numpy as np
+          os.makedirs('backend/model', exist_ok=True)
+          X = np.random.rand(100, 17)
+          y = np.random.randint(0, 2, 100)
+          model = RandomForestClassifier(n_estimators=10, random_state=42)
+          model.fit(X, y)
+          joblib.dump(model, 'backend/model/phishing_model.pkl')
+          features = ['length','dot_count','hyphen_count','slash_count',
+            'digit_count','special_char_count','has_https','has_ip','has_at',
+            'has_double_slash','has_port','entropy','has_punycode',
+            'suspicious_tld','subdomain_count','brand_in_subdomain','suspicious_words']
+          joblib.dump(features, 'backend/model/feature_names.pkl')
+          print('Dummy model created for CI')
+          PYEOF
+
+      - name: Start Flask server
+        env:
+          VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
+        run: |
+          cd backend
+          python app.py &
+          sleep 5
+          curl -f http://localhost:5000/health
+
+      - name: Run test suite
+        run: |
+          cd backend
+          python test_api.py
+
+  docker:
+    name: Docker Build Validation
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create dummy model for Docker build
+        run: |
+          python3 - << 'PYEOF'
+          import joblib, os
+          from sklearn.ensemble import RandomForestClassifier
+          import numpy as np
+          os.makedirs('backend/model', exist_ok=True)
+          X = np.random.rand(100, 17)
+          y = np.random.randint(0, 2, 100)
+          model = RandomForestClassifier(n_estimators=10, random_state=42)
+          model.fit(X, y)
+          joblib.dump(model, 'backend/model/phishing_model.pkl')
+          features = ['length','dot_count','hyphen_count','slash_count',
+            'digit_count','special_char_count','has_https','has_ip','has_at',
+            'has_double_slash','has_port','entropy','has_punycode',
+            'suspicious_tld','subdomain_count','brand_in_subdomain','suspicious_words']
+          joblib.dump(features, 'backend/model/feature_names.pkl')
+          PYEOF
+
+      - name: Build Docker image
+        run: |
+          cd backend
+          docker build -t phishguard-api .
+
+      - name: Verify Docker image
+        run: |
+          docker run -d -p 5000:5000 \
+            -e VIRUSTOTAL_API_KEY=test \
+            --name phishguard-test \
+            phishguard-api
+          sleep 10
+          curl -f http://localhost:5000/health
+          docker stop phishguard-test

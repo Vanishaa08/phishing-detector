@@ -12,15 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
       - name: Install flake8
         run: pip install flake8
-
       - name: Run flake8 linting
         run: |
           flake8 backend/app.py backend/features.py backend/cache.py \
@@ -38,30 +35,25 @@ jobs:
         image: redis:7-alpine
         ports:
           - 6379:6379
-
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
       - name: Cache pip dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
           restore-keys: ${{ runner.os }}-pip-
-
       - name: Install dependencies
         run: |
           cd backend
           pip install -r requirements.txt
-
       - name: Create dummy model for CI testing
         run: |
-          python3 - << 'PYEOF'
+          python3 -c "
           import joblib, os
           from sklearn.ensemble import RandomForestClassifier
           import numpy as np
@@ -71,14 +63,10 @@ jobs:
           model = RandomForestClassifier(n_estimators=10, random_state=42)
           model.fit(X, y)
           joblib.dump(model, 'backend/model/phishing_model.pkl')
-          features = ['length','dot_count','hyphen_count','slash_count',
-            'digit_count','special_char_count','has_https','has_ip','has_at',
-            'has_double_slash','has_port','entropy','has_punycode',
-            'suspicious_tld','subdomain_count','brand_in_subdomain','suspicious_words']
+          features = ['length','dot_count','hyphen_count','slash_count','digit_count','special_char_count','has_https','has_ip','has_at','has_double_slash','has_port','entropy','has_punycode','suspicious_tld','subdomain_count','brand_in_subdomain','suspicious_words']
           joblib.dump(features, 'backend/model/feature_names.pkl')
-          print('Dummy model created for CI')
-          PYEOF
-
+          print('Dummy model created')
+          "
       - name: Start Flask server
         env:
           VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
@@ -87,7 +75,6 @@ jobs:
           python app.py &
           sleep 5
           curl -f http://localhost:5000/health
-
       - name: Run test suite
         run: |
           cd backend
@@ -99,10 +86,15 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v3
-
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies for model creation
+        run: pip install scikit-learn joblib numpy
       - name: Create dummy model for Docker build
         run: |
-          python3 - << 'PYEOF'
+          python3 -c "
           import joblib, os
           from sklearn.ensemble import RandomForestClassifier
           import numpy as np
@@ -112,18 +104,14 @@ jobs:
           model = RandomForestClassifier(n_estimators=10, random_state=42)
           model.fit(X, y)
           joblib.dump(model, 'backend/model/phishing_model.pkl')
-          features = ['length','dot_count','hyphen_count','slash_count',
-            'digit_count','special_char_count','has_https','has_ip','has_at',
-            'has_double_slash','has_port','entropy','has_punycode',
-            'suspicious_tld','subdomain_count','brand_in_subdomain','suspicious_words']
+          features = ['length','dot_count','hyphen_count','slash_count','digit_count','special_char_count','has_https','has_ip','has_at','has_double_slash','has_port','entropy','has_punycode','suspicious_tld','subdomain_count','brand_in_subdomain','suspicious_words']
           joblib.dump(features, 'backend/model/feature_names.pkl')
-          PYEOF
-
+          print('Dummy model created')
+          "
       - name: Build Docker image
         run: |
           cd backend
           docker build -t phishguard-api .
-
       - name: Verify Docker image
         run: |
           docker run -d -p 5000:5000 \
